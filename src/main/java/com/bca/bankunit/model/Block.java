@@ -1,4 +1,5 @@
-package com.Profile.model;
+package com.bca.bankunit.model;
+
 
 import java.util.Date;
 
