@@ -1,5 +1,4 @@
-package com.bca.bankunit.controller;
-
+package com.Profile.controller;
 
 import java.security.KeyFactory;
 import java.security.PublicKey;
@@ -8,23 +7,36 @@ import java.security.spec.X509EncodedKeySpec;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.Callable;
 
+import org.bouncycastle.crypto.RuntimeCryptoException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import com.bca.bankunit.model.Block;
-import com.bca.bankunit.service.BlockService;
-import com.bca.bankunit.service.ConnectDB;
+import com.Profile.model.Block;
+import com.Profile.model.Person;
+import com.Profile.service.BlockService;
+import com.Profile.service.ConnectDB;
+import com.Profile.service.PersonService;
 
+@SpringBootApplication
 @RestController
 @CrossOrigin(origins = "*")
 public class MainController {	
@@ -41,9 +53,11 @@ public class MainController {
 	public static int difficulty = 2;
 	
 	@Autowired
+	private PersonService mPersonService;
 	private BlockService mBlockService;
-
-	public MainController(BlockService mBlockService) {
+	
+	public MainController(PersonService mPersonService) {
+		this.mPersonService = mPersonService;
 		this.mBlockService = mBlockService;
 	}
 	

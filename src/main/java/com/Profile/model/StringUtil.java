@@ -1,4 +1,4 @@
-package com.bca.bankunit.model;
+package com.Profile.model;
 
 import java.security.Key;
 import java.security.MessageDigest;
