@@ -1,12 +1,20 @@
-package com.Profile.model;
+package com.bca.bankunit.model;
+
 
 import java.util.Date;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+import org.springframework.stereotype.Component;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 
+@Entity
 public class Block {
 	public String hash;
 	public String previousHash;
+	@Id
 	private String id;
 	private String firstname;
 	private String lastname;
@@ -30,6 +38,10 @@ public class Block {
 	private String signature;
 	private String data;
 	//Constructor.
+
+	public Block() {
+		// TODO Auto-generated constructor stub
+	}
 
 	@JsonCreator
 	public Block(String id,String firstname, String lastname, String ktp, String email, String dob, String address, String nationality, String accountnum,String photo,String verified, String previousHash,String bcabank,String bcainsurance,String bcasyariah,String bcafinancial,String bcasekuritas){
