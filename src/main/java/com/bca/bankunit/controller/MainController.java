@@ -174,6 +174,7 @@ public class MainController {
 		
 		String needVerify = bBlock.getFirstname()+bBlock.getLastname()+bBlock.getKtp()+bBlock.getEmail()+bBlock.getDob()+bBlock.getAddress()+bBlock.getNationality()+bBlock.getAccountnum()+bBlock.getPhoto()+bBlock.getVerified()+bBlock.getBcabank()+bBlock.getBcainsurance()+bBlock.getBcafinancial()+bBlock.getBcasyariah()+bBlock.getBcasekuritas();
 		RestTemplate restTemplate = new RestTemplate();
+		//From Here
         //Set as Unit 2 Key IP
 		//Copy Paste for number of unit
 		String url = "http://192.168.43.171:8090/returnResponse";
@@ -210,13 +211,15 @@ public class MainController {
         if(answer.equals("True")){
         	counterTrue++;
         }
+        //To Here
 		
         //set >2 from 4
         if(counterTrue>=1) {
+        	System.out.println("Berhasil");
         	RestTemplate restTemplatex = new RestTemplate();
-       	 	String urlx = "http://192.168.43.219:8090/newBlock";
+       	 	String urlx = "http://localhost:8095/newBlock";
        	 	HttpHeaders headersx = new HttpHeaders();
-       	 	headers.setContentType(MediaType.APPLICATION_JSON);
+       	 	headersx.setContentType(MediaType.APPLICATION_JSON);
             JSONObject postdatax = new JSONObject();
             try {
                 postdatax.put("firstname",bBlock.getFirstname());
