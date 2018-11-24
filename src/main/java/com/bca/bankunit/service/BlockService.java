@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import org.springframework.stereotype.Service;
 
+import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
 
@@ -28,5 +29,22 @@ public class BlockService {
             throw new RuntimeException(e);
         }
     }
+	
+	public static byte[] applyECDSASig(PrivateKey privateKey, String input){
+		Signature dsa;
+		byte[] output = new byte[0];
+	
+		try {
+			dsa = Signature.getInstance("ECDSA","BC");
+			dsa.initSign(privateKey);
+			byte[] strByte = input.getBytes();
+			dsa.update(strByte);
+			byte[] realSig = dsa.sign();
+			output = realSig;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		return output;
+	}
 	
 }
