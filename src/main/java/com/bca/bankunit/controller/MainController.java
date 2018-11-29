@@ -165,7 +165,7 @@ public class MainController {
 			}
 	}
 	
-	//php to unitservice to master
+	//php to unitservice to master accept
 	@PostMapping("/acceptBlock")
 	public Block phpBlock(@RequestBody Block bBlock) {
 		
@@ -177,7 +177,7 @@ public class MainController {
 		//From Here
         //Set as Unit 2 Key IP
 		//Copy Paste for number of unit
-		String url = "http://192.168.43.171:8090/returnResponse";
+		String url = "http://localhost:8090/returnResponse";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         JSONObject postdata = new JSONObject();
@@ -253,6 +253,204 @@ public class MainController {
    	 		try {
    	 			db.openDB();
 				db.executeUpdate("UPDATE msdata SET verified = '0' WHERE ktp = '"+bBlock.getKtp()+"'");
+				db.closeDB();
+   	 		} catch (Exception e) {
+   	 			// TODO Auto-generated catch block
+   	 			e.printStackTrace();
+   	 	}
+   	 }
+   	 
+		return bBlock;
+	}
+	
+	
+	//php to unitservice to master blacklisst
+	@PostMapping("/blacklistBlock")
+	public Block blacklistBlock(@RequestBody Block bBlock) {
+		
+		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+		int counterTrue = 0;
+		
+		String needVerify = bBlock.getFirstname()+bBlock.getLastname()+bBlock.getKtp()+bBlock.getEmail()+bBlock.getDob()+bBlock.getAddress()+bBlock.getNationality()+bBlock.getAccountnum()+bBlock.getPhoto()+bBlock.getVerified()+bBlock.getBcabank()+bBlock.getBcainsurance()+bBlock.getBcafinancial()+bBlock.getBcasyariah()+bBlock.getBcasekuritas();
+		RestTemplate restTemplate = new RestTemplate();
+		//From Here
+        //Set as Unit 2 Key IP
+		//Copy Paste for number of unit
+		String url = "http://localhost:8090/returnResponse";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        JSONObject postdata = new JSONObject();
+        //Converting String to Private Key
+        
+        try {
+	        byte[] aPrivate = Base64.getDecoder().decode(base64privateKey1.getBytes("UTF-8"));			
+			PKCS8EncodedKeySpec keySpecx = new PKCS8EncodedKeySpec(aPrivate);
+			KeyFactory keyFactory = KeyFactory.getInstance("ECDSA" , "BC");
+			privatekey1 = keyFactory.generatePrivate(keySpecx);
+        }
+        catch(Exception e) {
+        	throw new RuntimeException(e);
+        }
+		//Converting signature Byte to String
+		byte[] byteSig = BlockService.applyECDSASig(privatekey1, needVerify);
+		String encoded = Base64.getEncoder().encodeToString(byteSig);
+		
+		try {
+            postdata.put("signature",encoded);
+            postdata.put("data",needVerify);
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+        String requestJson = postdata.toString();
+        HttpEntity<String> entity = new HttpEntity<String>(requestJson,headers);
+        String answer = restTemplate.postForObject(url, entity, String.class);
+        
+        if(answer.equals("True")){
+        	counterTrue++;
+        }
+        //To Here
+		
+        //set >2 from 4
+        if(counterTrue>=1) {
+        	System.out.println("Berhasil");
+        	RestTemplate restTemplatex = new RestTemplate();
+       	 	String urlx = "http://localhost:8095/newBlock";
+       	 	HttpHeaders headersx = new HttpHeaders();
+       	 	headersx.setContentType(MediaType.APPLICATION_JSON);
+            JSONObject postdatax = new JSONObject();
+            try {
+                postdatax.put("firstname",bBlock.getFirstname());
+                postdatax.put("lastname",bBlock.getLastname());
+                postdatax.put("ktp",bBlock.getKtp());
+                postdatax.put("email",bBlock.getEmail());
+                postdatax.put("dob",bBlock.getDob());
+                postdatax.put("address",bBlock.getAddress());
+                postdatax.put("nationality",bBlock.getNationality());
+                postdatax.put("accountnum",bBlock.getAccountnum());
+                postdatax.put("photo",bBlock.getPhoto());
+                postdatax.put("verified", bBlock.getVerified());
+                postdatax.put("bcabank", bBlock.getBcabank());
+                postdatax.put("bcainsurance", bBlock.getBcainsurance());
+                postdatax.put("bcafinancial", bBlock.getBcafinancial());
+                postdatax.put("bcasyariah", bBlock.getBcasyariah());
+                postdatax.put("bcasekuritas", bBlock.getBcasekuritas());
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+            String requestJsonx = postdatax.toString();
+	        HttpEntity<String> entityx = new HttpEntity<String>(requestJsonx,headersx);
+	        String answerx = restTemplatex.postForObject(urlx, entityx, String.class);
+	        System.out.println(answerx);
+        }
+		
+   	 	if(answer.equals("False"))
+   	 	{
+   	 		try {
+   	 			db.openDB();
+				db.executeUpdate("UPDATE msdata SET verified = '1' WHERE ktp = '"+bBlock.getKtp()+"'");
+				db.closeDB();
+   	 		} catch (Exception e) {
+   	 			// TODO Auto-generated catch block
+   	 			e.printStackTrace();
+   	 	}
+   	 }
+   	 
+		return bBlock;
+	}
+	
+	//php to unitservice to master blacklisst
+	@PostMapping("/rejectBlock")
+	public Block rejectBlock(@RequestBody Block bBlock) {
+		
+		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+		int counterTrue = 0;
+		
+		String needVerify = bBlock.getFirstname()+bBlock.getLastname()+bBlock.getKtp()+bBlock.getEmail()+bBlock.getDob()+bBlock.getAddress()+bBlock.getNationality()+bBlock.getAccountnum()+bBlock.getPhoto()+bBlock.getVerified()+bBlock.getBcabank()+bBlock.getBcainsurance()+bBlock.getBcafinancial()+bBlock.getBcasyariah()+bBlock.getBcasekuritas();
+		RestTemplate restTemplate = new RestTemplate();
+		//From Here
+        //Set as Unit 2 Key IP
+		//Copy Paste for number of unit
+		String url = "http://localhost:8090/returnResponse";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        JSONObject postdata = new JSONObject();
+        //Converting String to Private Key
+        
+        try {
+	        byte[] aPrivate = Base64.getDecoder().decode(base64privateKey1.getBytes("UTF-8"));			
+			PKCS8EncodedKeySpec keySpecx = new PKCS8EncodedKeySpec(aPrivate);
+			KeyFactory keyFactory = KeyFactory.getInstance("ECDSA" , "BC");
+			privatekey1 = keyFactory.generatePrivate(keySpecx);
+        }
+        catch(Exception e) {
+        	throw new RuntimeException(e);
+        }
+		//Converting signature Byte to String
+		byte[] byteSig = BlockService.applyECDSASig(privatekey1, needVerify);
+		String encoded = Base64.getEncoder().encodeToString(byteSig);
+		
+		try {
+            postdata.put("signature",encoded);
+            postdata.put("data",needVerify);
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+        String requestJson = postdata.toString();
+        HttpEntity<String> entity = new HttpEntity<String>(requestJson,headers);
+        String answer = restTemplate.postForObject(url, entity, String.class);
+        
+        if(answer.equals("True")){
+        	counterTrue++;
+        }
+        //To Here
+		
+        //set >2 from 4
+        if(counterTrue>=1) {
+        	System.out.println("Berhasil");
+        	RestTemplate restTemplatex = new RestTemplate();
+       	 	String urlx = "http://localhost:8095/masterRejectBlock";
+       	 	HttpHeaders headersx = new HttpHeaders();
+       	 	headersx.setContentType(MediaType.APPLICATION_JSON);
+            JSONObject postdatax = new JSONObject();
+            try {
+                postdatax.put("firstname",bBlock.getFirstname());
+                postdatax.put("lastname",bBlock.getLastname());
+                postdatax.put("ktp",bBlock.getKtp());
+                postdatax.put("email",bBlock.getEmail());
+                postdatax.put("dob",bBlock.getDob());
+                postdatax.put("address",bBlock.getAddress());
+                postdatax.put("nationality",bBlock.getNationality());
+                postdatax.put("accountnum",bBlock.getAccountnum());
+                postdatax.put("photo",bBlock.getPhoto());
+                postdatax.put("verified", bBlock.getVerified());
+                postdatax.put("bcabank", bBlock.getBcabank());
+                postdatax.put("bcainsurance", bBlock.getBcainsurance());
+                postdatax.put("bcafinancial", bBlock.getBcafinancial());
+                postdatax.put("bcasyariah", bBlock.getBcasyariah());
+                postdatax.put("bcasekuritas", bBlock.getBcasekuritas());
+            }
+            catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+            String requestJsonx = postdatax.toString();
+	        HttpEntity<String> entityx = new HttpEntity<String>(requestJsonx,headersx);
+	        String answerx = restTemplatex.postForObject(urlx, entityx, String.class);
+	        System.out.println(answerx);
+        }
+		
+   	 	if(answer.equals("False"))
+   	 	{
+   	 		try {
+   	 			db.openDB();
+   	 			db.executeUpdate("insert into msdata(firstname,lastname,ktp,email,dob,address,nationality,accountnum,photo,verified) values "
+   						+ "('"+bBlock.getFirstname()+"','"+bBlock.getLastname()+"','"+bBlock.getKtp()+"','"+bBlock.getEmail()+"','"+bBlock.getDob()+"','"+bBlock.getAddress()+"','"+bBlock.getNationality()+"','"+bBlock.getAccountnum()+"','"+bBlock.getPhoto()+"','"+bBlock.getVerified()+"')");
 				db.closeDB();
    	 		} catch (Exception e) {
    	 			// TODO Auto-generated catch block
