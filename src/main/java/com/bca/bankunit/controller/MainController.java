@@ -68,6 +68,18 @@ public class MainController {
 	}
 	
 	
+	//Master to unit update
+	@PostMapping("/getUpdate")
+	public Block getUpdate(@RequestBody Block uBlock) {
+		try {
+			db.openDB();
+			db.executeUpdate("INSERT INTO mstemp (ktp, firstname, lastname, email, dob, address, nationality, accountnum, photo) VALUES ('"+uBlock.getKtp()+"','"+uBlock.getFirstname()+"','"+uBlock.getLastname()+"','"+uBlock.getEmail()+"','"+uBlock.getDob()+"','"+uBlock.getAddress()+"','"+uBlock.getNationality()+"','"+uBlock.getAccountnum()+"','"+uBlock.getPhoto()+"')");
+			db.closeDB();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return uBlock;
+	}
 	
 	//master to unitdb
 	@PostMapping("/bankBlock")
@@ -80,7 +92,6 @@ public class MainController {
 			db.executeUpdate("INSERT INTO msdata (ktp, firstname, lastname, email, dob, address, nationality, accountnum, photo, verified) VALUES ('"+mBlock.getKtp()+"','"+mBlock.getFirstname()+"','"+mBlock.getLastname()+"','"+mBlock.getEmail()+"','"+mBlock.getDob()+"','"+mBlock.getAddress()+"','"+mBlock.getNationality()+"','"+mBlock.getAccountnum()+"','"+mBlock.getPhoto()+"','0')");
 			db.closeDB();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return mBlock;
@@ -90,13 +101,11 @@ public class MainController {
 	public String returnBlock(@RequestBody Block mBlock) {
 		//if(mBlock.getFirstname().equals("William"))
 		System.out.println("First name: " + mBlock);
-		if(("William").equals(mBlock.getFirstname()))
-		{
-		return "True";
+		if(("William").equals(mBlock.getFirstname())){
+			return "True";
 		}
-		else 
-		{
-		return "False";
+		else {
+			return "False";
 		}
 	}
 	
@@ -238,8 +247,7 @@ public class MainController {
                 postdatax.put("bcasyariah", bBlock.getBcasyariah());
                 postdatax.put("bcasekuritas", bBlock.getBcasekuritas());
             }
-            catch (JSONException e)
-            {
+            catch (JSONException e){
                 e.printStackTrace();
             }
             String requestJsonx = postdatax.toString();
@@ -248,18 +256,15 @@ public class MainController {
 	        System.out.println(answerx);
         }
 		
-   	 	if(answer.equals("False"))
-   	 	{
+   	 	if(answer.equals("False")){
    	 		try {
    	 			db.openDB();
 				db.executeUpdate("UPDATE msdata SET verified = '0' WHERE ktp = '"+bBlock.getKtp()+"'");
 				db.closeDB();
    	 		} catch (Exception e) {
-   	 			// TODO Auto-generated catch block
    	 			e.printStackTrace();
    	 	}
    	 }
-   	 
 		return bBlock;
 	}
 	
@@ -299,8 +304,7 @@ public class MainController {
             postdata.put("signature",encoded);
             postdata.put("data",needVerify);
         }
-        catch (JSONException e)
-        {
+        catch (JSONException e){
             e.printStackTrace();
         }
         String requestJson = postdata.toString();
@@ -337,8 +341,7 @@ public class MainController {
                 postdatax.put("bcasyariah", bBlock.getBcasyariah());
                 postdatax.put("bcasekuritas", bBlock.getBcasekuritas());
             }
-            catch (JSONException e)
-            {
+            catch (JSONException e){
                 e.printStackTrace();
             }
             String requestJsonx = postdatax.toString();
@@ -347,8 +350,7 @@ public class MainController {
 	        System.out.println(answerx);
         }
 		
-   	 	if(answer.equals("False"))
-   	 	{
+   	 	if(answer.equals("False")){
    	 		try {
    	 			db.openDB();
 				db.executeUpdate("UPDATE msdata SET verified = '1' WHERE ktp = '"+bBlock.getKtp()+"'");
@@ -358,7 +360,6 @@ public class MainController {
    	 			e.printStackTrace();
    	 	}
    	 }
-   	 
 		return bBlock;
 	}
 	
@@ -374,7 +375,7 @@ public class MainController {
 		//From Here
         //Set as Unit 2 Key IP
 		//Copy Paste for number of unit
-		String url = "http://localhost:8090/returnResponse";
+		String url = "http://192.168.43.221:8090/returnResponse";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         JSONObject postdata = new JSONObject();
@@ -397,8 +398,7 @@ public class MainController {
             postdata.put("signature",encoded);
             postdata.put("data",needVerify);
         }
-        catch (JSONException e)
-        {
+        catch (JSONException e){
             e.printStackTrace();
         }
         String requestJson = postdata.toString();
@@ -435,8 +435,7 @@ public class MainController {
                 postdatax.put("bcasyariah", bBlock.getBcasyariah());
                 postdatax.put("bcasekuritas", bBlock.getBcasekuritas());
             }
-            catch (JSONException e)
-            {
+            catch (JSONException e){
                 e.printStackTrace();
             }
             String requestJsonx = postdatax.toString();
@@ -445,46 +444,21 @@ public class MainController {
 	        System.out.println(answerx);
         }
 		
-   	 	if(answer.equals("False"))
-   	 	{
+   	 	if(answer.equals("False")){
    	 		try {
    	 			db.openDB();
    	 			db.executeUpdate("insert into msdata(firstname,lastname,ktp,email,dob,address,nationality,accountnum,photo,verified) values "
    						+ "('"+bBlock.getFirstname()+"','"+bBlock.getLastname()+"','"+bBlock.getKtp()+"','"+bBlock.getEmail()+"','"+bBlock.getDob()+"','"+bBlock.getAddress()+"','"+bBlock.getNationality()+"','"+bBlock.getAccountnum()+"','"+bBlock.getPhoto()+"','"+bBlock.getVerified()+"')");
 				db.closeDB();
    	 		} catch (Exception e) {
-   	 			// TODO Auto-generated catch block
    	 			e.printStackTrace();
    	 	}
    	 }
-   	 
 		return bBlock;
 	}
 	
-	//Haha
+	//View Block
 	public java.util.List<Block> getBlock() {
-//		try {
-//			db.openDB();
-//			rs= db.executeQuery("select firstname from msdata");
-//			alBlock = new ArrayList<Block>();
-//			while(rs.next()) {
-//				if(alBlock.isEmpty()) {
-//					alBlock.add(new Block(rs.getString(1),"0"));
-//					alBlock.get(alBlock.size()-1).mineBlock(difficulty);
-//					Thread.sleep(100);	
-//				}
-//				else {
-//					alBlock.add(new Block(rs.getString(1),alBlock.get(alBlock.size()-1).getHash()));
-//					alBlock.get(alBlock.size()-1).mineBlock(difficulty);
-//					Thread.sleep(100);
-//				}
-//			}
-//			db.closeDB();
-//		} catch (Exception	 e) {
-//			e.printStackTrace();
-//		}
-//		System.out.println(alBlock.get(0));
-		
 		alBlock = new ArrayList<Block>();
 		try {
 			db.openDB();
@@ -496,7 +470,6 @@ public class MainController {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 		return alBlock;
 	}
 }
