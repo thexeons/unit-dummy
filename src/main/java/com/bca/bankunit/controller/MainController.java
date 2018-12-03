@@ -81,6 +81,90 @@ public class MainController {
 		return uBlock;
 	}
 	
+	@PostMapping("/confirmUpdate")
+	public Block confirmUpdate(@RequestBody Block cBlock) {
+		
+		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+		int counterTrue = 0;
+		
+		String needVerify = cBlock.getFirstname()+cBlock.getLastname()+cBlock.getKtp()+cBlock.getEmail()+cBlock.getDob()+cBlock.getAddress()+cBlock.getNationality()+cBlock.getAccountnum()+cBlock.getPhoto()+cBlock.getVerified()+cBlock.getBcabank()+cBlock.getBcainsurance()+cBlock.getBcafinancial()+cBlock.getBcasyariah()+cBlock.getBcasekuritas();
+		RestTemplate restTemplate = new RestTemplate();
+		//From Here
+        //Set as Unit 2 Key IP
+		//Copy Paste for number of unit
+		String url = "http://192.168.43.171:8090/returnResponse";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        JSONObject postdata = new JSONObject();
+        //Converting String to Private Key
+        
+        try {
+	        byte[] aPrivate = Base64.getDecoder().decode(base64privateKey1.getBytes("UTF-8"));			
+			PKCS8EncodedKeySpec keySpecx = new PKCS8EncodedKeySpec(aPrivate);
+			KeyFactory keyFactory = KeyFactory.getInstance("ECDSA" , "BC");
+			privatekey1 = keyFactory.generatePrivate(keySpecx);
+        }
+        catch(Exception e) {
+        	throw new RuntimeException(e);
+        }
+		//Converting signature Byte to String
+		byte[] byteSig = BlockService.applyECDSASig(privatekey1, needVerify);
+		String encoded = Base64.getEncoder().encodeToString(byteSig);
+		
+		try {
+            postdata.put("signature",encoded);
+            postdata.put("data",needVerify);
+        }
+        catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+        String requestJson = postdata.toString();
+        HttpEntity<String> entity = new HttpEntity<String>(requestJson,headers);
+        String answer = restTemplate.postForObject(url, entity, String.class);
+        
+        if(answer.equals("True")){
+        	counterTrue++;
+        }
+        //To Here
+		
+        //set >2 from 4
+        if(counterTrue>=1) {
+        	System.out.println("Berhasil");
+        	RestTemplate restTemplatex = new RestTemplate();
+       	 	String urlx = "http://localhost:8095/newBlock";
+       	 	HttpHeaders headersx = new HttpHeaders();
+       	 	headersx.setContentType(MediaType.APPLICATION_JSON);
+            JSONObject postdatax = new JSONObject();
+            try {
+                postdatax.put("firstname",cBlock.getFirstname());
+                postdatax.put("lastname",cBlock.getLastname());
+                postdatax.put("ktp",cBlock.getKtp());
+                postdatax.put("email",cBlock.getEmail());
+                postdatax.put("dob",cBlock.getDob());
+                postdatax.put("address",cBlock.getAddress());
+                postdatax.put("nationality",cBlock.getNationality());
+                postdatax.put("accountnum",cBlock.getAccountnum());
+                postdatax.put("photo",cBlock.getPhoto());
+                postdatax.put("verified", cBlock.getVerified());
+                postdatax.put("bcabank", cBlock.getBcabank());
+                postdatax.put("bcainsurance", cBlock.getBcainsurance());
+                postdatax.put("bcafinancial", cBlock.getBcafinancial());
+                postdatax.put("bcasyariah", cBlock.getBcasyariah());
+                postdatax.put("bcasekuritas", cBlock.getBcasekuritas());
+            }
+            catch (JSONException e){
+                e.printStackTrace();
+            }
+            String requestJsonx = postdatax.toString();
+	        HttpEntity<String> entityx = new HttpEntity<String>(requestJsonx,headersx);
+	        String answerx = restTemplatex.postForObject(urlx, entityx, String.class);
+	        System.out.println(answerx);
+        }
+		
+		return cBlock;
+	}
+	
 	//master to unitdb
 	@PostMapping("/bankBlock")
 	public Block bankBlock(@RequestBody Block mBlock) {
@@ -176,7 +260,7 @@ public class MainController {
 	
 	//php to unitservice to master accept
 	@PostMapping("/acceptBlock")
-	public Block phpBlock(@RequestBody Block bBlock) {
+	public Block acceptBlock(@RequestBody Block bBlock) {
 		
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 		int counterTrue = 0;
