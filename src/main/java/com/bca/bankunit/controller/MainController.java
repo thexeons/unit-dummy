@@ -67,6 +67,22 @@ public class MainController {
 		this.mBlockService = mBlockService;
 	}
 	
+	//Get Notification update from other branch
+	//Change DB name depends on your unit on conncet DB
+	@PostMapping("/updateNotification")
+	public Block updateNotification(@RequestBody Block uBlock) {
+		try {
+			db.openDB();
+			db.executeUpdate("DELETE FROM msdata where ktp='"+uBlock.getKtp()+"'");
+			db.executeUpdate("INSERT INTO msdata (ktp, firstname, lastname, email, dob, address, nationality, accountnum, photo,verified) VALUES ('"+uBlock.getKtp()+"','"+uBlock.getFirstname()+"','"+uBlock.getLastname()+"','"+uBlock.getEmail()+"','"+uBlock.getDob()+"','"+uBlock.getAddress()+"','"+uBlock.getNationality()+"','"+uBlock.getAccountnum()+"','"+uBlock.getPhoto()+"','1')");
+			db.closeDB();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return uBlock;
+	}
+	
 	
 	//Master to unit update
 	@PostMapping("/getUpdate")
