@@ -103,8 +103,8 @@ public class Block {
 	}
 	
 	
-	public Block(String firstname) {
-		this.firstname = firstname;
+	public Block(String id) {
+		this.id = id;
 	}
 	
 	public Block(String signature, String data) {
