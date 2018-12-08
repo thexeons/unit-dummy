@@ -35,6 +35,22 @@ public class MainController {
 	ConnectDB db = new ConnectDB();
 	RestTemplate rt = new RestTemplate();
 	
+
+	public static final String[] master = {"192.168.43","192.168.43","192.168.43","192.168.43"};
+	public static final String[] unit = {"192.168.43","192.168.43","192.168.43","192.168.43"};
+
+	public static final String  master1 = "192.168.43.219";
+	public static final String  master2 = "192.168.43.171";
+	public static final String  master3 = "192.168.43.219";
+	public static final String  master4 = "192.168.43.219";
+	public static final String  master5 = "192.168.43.219";
+	
+	public static final String  bcabankIP = "localhost:8090";
+	public static final String  bcasyariahIP = "192.168.43.171";
+	public static final String  bcasekuritasIP = "192.168.43.219";
+	public static final String  bcafinancialIP = "192.168.43.219";
+	public static final String  bcainsuranceIP = "192.168.43.219";
+	
 	//public String base64pubkey = "MFUwEwYHKoZIzj0CAQYIKoZIzj0DAQQDPgAEdRjqcQG0/6qisxiTnXW8XhZZwp3SsGXV1WXXEfxqAWAwBLgjOHX7/Sw0+5kKNACoZ0cwDVOf3NeJTkbW";
 	public String base64pubkey1 = "MFUwEwYHKoZIzj0CAQYIKoZIzj0DAQQDPgAEdRjqcQG0/6qisxiTnXW8XhZZwp3SsGXV1WXXEfxqAWAwBLgjOHX7/Sw0+5kKNACoZ0cwDVOf3NeJTkbW";
 	public PublicKey publickey1;
@@ -68,7 +84,17 @@ public class MainController {
 	}
 	
 	
-	
+	//canceling update from master and delete from temp
+	@PostMapping("/deleteUpdate")
+	public void deleteUpdate(@RequestBody Block uBlock) {
+		try {
+			db.openDB();
+			db.executeUpdate("delete from mstemp where ktp='"+uBlock.getKtp()+"'");
+			db.closeDB();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	
 	
 	
@@ -109,15 +135,7 @@ public class MainController {
 		int counterTrue = 0;
 		
 		String needVerify = cBlock.getFirstname()+cBlock.getLastname()+cBlock.getKtp()+cBlock.getEmail()+cBlock.getDob()+cBlock.getAddress()+cBlock.getNationality()+cBlock.getAccountnum()+cBlock.getPhoto()+cBlock.getVerified()+cBlock.getBcabank()+cBlock.getBcainsurance()+cBlock.getBcafinancial()+cBlock.getBcasyariah()+cBlock.getBcasekuritas();
-		RestTemplate restTemplate = new RestTemplate();
-		//From Here
-        //Set as Unit 2 Key IP
-		//Copy Paste for number of unit
-		String url = "http://192.168.43.171:8090/returnResponse";
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        JSONObject postdata = new JSONObject();
-        //Converting String to Private Key
+		//Converting String to Private Key
         
         try {
 	        byte[] aPrivate = Base64.getDecoder().decode(base64privateKey1.getBytes("UTF-8"));			
@@ -132,28 +150,38 @@ public class MainController {
 		byte[] byteSig = BlockService.applyECDSASig(privatekey1, needVerify);
 		String encoded = Base64.getEncoder().encodeToString(byteSig);
 		
-		try {
-            postdata.put("signature",encoded);
-            postdata.put("data",needVerify);
-        }
-        catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
-        String requestJson = postdata.toString();
-        HttpEntity<String> entity = new HttpEntity<String>(requestJson,headers);
-        String answer = restTemplate.postForObject(url, entity, String.class);
-        
-        if(answer.equals("True")){
-        	counterTrue++;
-        }
+		
+		//Concensus
+		for(int c = 0 ;c<4;c++) {
+			RestTemplate restTemplate = new RestTemplate();
+			String url = "http://"+unit[c]+"/returnResponse";
+	        HttpHeaders headers = new HttpHeaders();
+	        headers.setContentType(MediaType.APPLICATION_JSON);
+	        JSONObject postdata = new JSONObject();
+	   
+			try {
+	            postdata.put("signature",encoded);
+	            postdata.put("data",needVerify);
+	        }
+	        catch (JSONException e)
+	        {
+	            e.printStackTrace();
+	        }
+	        String requestJson = postdata.toString();
+	        HttpEntity<String> entity = new HttpEntity<String>(requestJson,headers);
+	        String answer = restTemplate.postForObject(url, entity, String.class);
+	        
+	        if(answer.equals("True")){
+	        	counterTrue++;
+	        }
+		}
         //To Here
 		
         //set >2 from 4
-        if(counterTrue>=1) {
+        if(counterTrue>=2) {
         	System.out.println("Berhasil");
         	RestTemplate restTemplatex = new RestTemplate();
-       	 	String urlx = "http://localhost:8095/newBlock";
+       	 	String urlx = "http://"+master1+"/newUpdateBlock";
        	 	HttpHeaders headersx = new HttpHeaders();
        	 	headersx.setContentType(MediaType.APPLICATION_JSON);
             JSONObject postdatax = new JSONObject();
@@ -202,17 +230,6 @@ public class MainController {
 		return mBlock;
 	}
 	
-	@PostMapping("/getTest")
-	public String returnBlock(@RequestBody Block mBlock) {
-		//if(mBlock.getFirstname().equals("William"))
-		System.out.println("First name: " + mBlock);
-		if(("William").equals(mBlock.getFirstname())){
-			return "True";
-		}
-		else {
-			return "False";
-		}
-	}
 	
 	@PostMapping("/returnResponse")
 	public String returnResponse(@RequestBody Block mBlock) {
@@ -285,18 +302,11 @@ public class MainController {
 		
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 		int counterTrue = 0;
+		String answer = "";
 		
 		String needVerify = bBlock.getFirstname()+bBlock.getLastname()+bBlock.getKtp()+bBlock.getEmail()+bBlock.getDob()+bBlock.getAddress()+bBlock.getNationality()+bBlock.getAccountnum()+bBlock.getPhoto()+bBlock.getVerified()+bBlock.getBcabank()+bBlock.getBcainsurance()+bBlock.getBcafinancial()+bBlock.getBcasyariah()+bBlock.getBcasekuritas();
-		RestTemplate restTemplate = new RestTemplate();
-		//From Here
-        //Set as Unit 2 Key IP
-		//Copy Paste for number of unit
-		String url = "http://localhost:8090/returnResponse";
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        JSONObject postdata = new JSONObject();
-        //Converting String to Private Key
-        
+		
+		//Converting String to Private Key
         try {
 	        byte[] aPrivate = Base64.getDecoder().decode(base64privateKey1.getBytes("UTF-8"));			
 			PKCS8EncodedKeySpec keySpecx = new PKCS8EncodedKeySpec(aPrivate);
@@ -309,29 +319,40 @@ public class MainController {
 		//Converting signature Byte to String
 		byte[] byteSig = BlockService.applyECDSASig(privatekey1, needVerify);
 		String encoded = Base64.getEncoder().encodeToString(byteSig);
-		
-		try {
-            postdata.put("signature",encoded);
-            postdata.put("data",needVerify);
-        }
-        catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
-        String requestJson = postdata.toString();
-        HttpEntity<String> entity = new HttpEntity<String>(requestJson,headers);
-        String answer = restTemplate.postForObject(url, entity, String.class);
-        
-        if(answer.equals("True")){
-        	counterTrue++;
-        }
+
+		//From Here
+        //Set as Unit 2 Key IP
+		//Copy Paste for number of unit
+		for(int c = 0;c<4;c++) {
+			RestTemplate restTemplate = new RestTemplate();
+			String url = "http://"+unit[c]+"/returnResponse";
+	        HttpHeaders headers = new HttpHeaders();
+	        headers.setContentType(MediaType.APPLICATION_JSON);
+	        JSONObject postdata = new JSONObject();
+	        
+			try {
+	            postdata.put("signature",encoded);
+	            postdata.put("data",needVerify);
+	        }
+	        catch (JSONException e)
+	        {
+	            e.printStackTrace();
+	        }
+	        String requestJson = postdata.toString();
+	        HttpEntity<String> entity = new HttpEntity<String>(requestJson,headers);
+	        answer = restTemplate.postForObject(url, entity, String.class);
+	        
+	        if(answer.equals("True")){
+	        	counterTrue++;
+	        }
+		}
         //To Here
 		
         //set >2 from 4
-        if(counterTrue>=1) {
+        if(counterTrue>=2) {
         	System.out.println("Berhasil");
         	RestTemplate restTemplatex = new RestTemplate();
-       	 	String urlx = "http://localhost:8095/newBlock";
+       	 	String urlx = "http://"+master1+"/newBlock";
        	 	HttpHeaders headersx = new HttpHeaders();
        	 	headersx.setContentType(MediaType.APPLICATION_JSON);
             JSONObject postdatax = new JSONObject();
@@ -380,18 +401,11 @@ public class MainController {
 		
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 		int counterTrue = 0;
+		String answer = "";
 		
 		String needVerify = bBlock.getFirstname()+bBlock.getLastname()+bBlock.getKtp()+bBlock.getEmail()+bBlock.getDob()+bBlock.getAddress()+bBlock.getNationality()+bBlock.getAccountnum()+bBlock.getPhoto()+bBlock.getVerified()+bBlock.getBcabank()+bBlock.getBcainsurance()+bBlock.getBcafinancial()+bBlock.getBcasyariah()+bBlock.getBcasekuritas();
-		RestTemplate restTemplate = new RestTemplate();
-		//From Here
-        //Set as Unit 2 Key IP
-		//Copy Paste for number of unit
-		String url = "http://localhost:8090/returnResponse";
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        JSONObject postdata = new JSONObject();
-        //Converting String to Private Key
-        
+		
+		//Converting String to Private Key
         try {
 	        byte[] aPrivate = Base64.getDecoder().decode(base64privateKey1.getBytes("UTF-8"));			
 			PKCS8EncodedKeySpec keySpecx = new PKCS8EncodedKeySpec(aPrivate);
@@ -404,28 +418,40 @@ public class MainController {
 		//Converting signature Byte to String
 		byte[] byteSig = BlockService.applyECDSASig(privatekey1, needVerify);
 		String encoded = Base64.getEncoder().encodeToString(byteSig);
-		
-		try {
-            postdata.put("signature",encoded);
-            postdata.put("data",needVerify);
-        }
-        catch (JSONException e){
-            e.printStackTrace();
-        }
-        String requestJson = postdata.toString();
-        HttpEntity<String> entity = new HttpEntity<String>(requestJson,headers);
-        String answer = restTemplate.postForObject(url, entity, String.class);
-        
-        if(answer.equals("True")){
-        	counterTrue++;
-        }
+
+		//From Here
+        //Set as Unit 2 Key IP
+		//Copy Paste for number of unit
+		for(int c = 0;c<4;c++) {
+			RestTemplate restTemplate = new RestTemplate();
+			String url = "http://"+unit[c]+"/returnResponse";
+	        HttpHeaders headers = new HttpHeaders();
+	        headers.setContentType(MediaType.APPLICATION_JSON);
+	        JSONObject postdata = new JSONObject();
+	        
+			try {
+	            postdata.put("signature",encoded);
+	            postdata.put("data",needVerify);
+	        }
+	        catch (JSONException e)
+	        {
+	            e.printStackTrace();
+	        }
+	        String requestJson = postdata.toString();
+	        HttpEntity<String> entity = new HttpEntity<String>(requestJson,headers);
+	        answer = restTemplate.postForObject(url, entity, String.class);
+	        
+	        if(answer.equals("True")){
+	        	counterTrue++;
+	        }
+		}
         //To Here
 		
         //set >2 from 4
-        if(counterTrue>=1) {
+        if(counterTrue>=2) {
         	System.out.println("Berhasil");
         	RestTemplate restTemplatex = new RestTemplate();
-       	 	String urlx = "http://localhost:8095/newBlock";
+       	 	String urlx = "http://"+master1+"/newBlock";
        	 	HttpHeaders headersx = new HttpHeaders();
        	 	headersx.setContentType(MediaType.APPLICATION_JSON);
             JSONObject postdatax = new JSONObject();
@@ -474,18 +500,11 @@ public class MainController {
 		
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 		int counterTrue = 0;
+		String answer = "";
 		
 		String needVerify = bBlock.getFirstname()+bBlock.getLastname()+bBlock.getKtp()+bBlock.getEmail()+bBlock.getDob()+bBlock.getAddress()+bBlock.getNationality()+bBlock.getAccountnum()+bBlock.getPhoto()+bBlock.getVerified()+bBlock.getBcabank()+bBlock.getBcainsurance()+bBlock.getBcafinancial()+bBlock.getBcasyariah()+bBlock.getBcasekuritas();
-		RestTemplate restTemplate = new RestTemplate();
-		//From Here
-        //Set as Unit 2 Key IP
-		//Copy Paste for number of unit
-		String url = "http://192.168.43.221:8090/returnResponse";
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        JSONObject postdata = new JSONObject();
-        //Converting String to Private Key
-        
+		
+		//Converting String to Private Key
         try {
 	        byte[] aPrivate = Base64.getDecoder().decode(base64privateKey1.getBytes("UTF-8"));			
 			PKCS8EncodedKeySpec keySpecx = new PKCS8EncodedKeySpec(aPrivate);
@@ -498,28 +517,40 @@ public class MainController {
 		//Converting signature Byte to String
 		byte[] byteSig = BlockService.applyECDSASig(privatekey1, needVerify);
 		String encoded = Base64.getEncoder().encodeToString(byteSig);
-		
-		try {
-            postdata.put("signature",encoded);
-            postdata.put("data",needVerify);
-        }
-        catch (JSONException e){
-            e.printStackTrace();
-        }
-        String requestJson = postdata.toString();
-        HttpEntity<String> entity = new HttpEntity<String>(requestJson,headers);
-        String answer = restTemplate.postForObject(url, entity, String.class);
-        
-        if(answer.equals("True")){
-        	counterTrue++;
-        }
+
+		//From Here
+        //Set as Unit 2 Key IP
+		//Copy Paste for number of unit
+		for(int c = 0;c<4;c++) {
+			RestTemplate restTemplate = new RestTemplate();
+			String url = "http://"+unit[c]+"/returnResponse";
+	        HttpHeaders headers = new HttpHeaders();
+	        headers.setContentType(MediaType.APPLICATION_JSON);
+	        JSONObject postdata = new JSONObject();
+	        
+			try {
+	            postdata.put("signature",encoded);
+	            postdata.put("data",needVerify);
+	        }
+	        catch (JSONException e)
+	        {
+	            e.printStackTrace();
+	        }
+	        String requestJson = postdata.toString();
+	        HttpEntity<String> entity = new HttpEntity<String>(requestJson,headers);
+	        answer = restTemplate.postForObject(url, entity, String.class);
+	        
+	        if(answer.equals("True")){
+	        	counterTrue++;
+	        }
+		}
         //To Here
 		
         //set >2 from 4
-        if(counterTrue>=1) {
+        if(counterTrue>=2) {
         	System.out.println("Berhasil");
         	RestTemplate restTemplatex = new RestTemplate();
-       	 	String urlx = "http://localhost:8095/masterRejectBlock";
+       	 	String urlx = "http://"+master1+"/newBlock";
        	 	HttpHeaders headersx = new HttpHeaders();
        	 	headersx.setContentType(MediaType.APPLICATION_JSON);
             JSONObject postdatax = new JSONObject();
