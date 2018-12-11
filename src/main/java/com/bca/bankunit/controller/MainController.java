@@ -39,7 +39,7 @@ public class MainController {
 	public static final String[] master = {"192.168.43","192.168.43","192.168.43","192.168.43"};
 	public static final String[] unit = {"192.168.43","192.168.43","192.168.43","192.168.43"};
 
-	public static final String  master1 = "192.168.43.219";
+	public static final String  master1 = "localhost:8095";
 	public static final String  master2 = "192.168.43.171";
 	public static final String  master3 = "192.168.43.219";
 	public static final String  master4 = "192.168.43.219";
@@ -222,7 +222,7 @@ public class MainController {
 		
 		try {
 			db.openDB();
-			db.executeUpdate("INSERT INTO msdata (ktp, firstname, lastname, email, dob, address, nationality, accountnum, photo, verified) VALUES ('"+mBlock.getKtp()+"','"+mBlock.getFirstname()+"','"+mBlock.getLastname()+"','"+mBlock.getEmail()+"','"+mBlock.getDob()+"','"+mBlock.getAddress()+"','"+mBlock.getNationality()+"','"+mBlock.getAccountnum()+"','"+mBlock.getPhoto()+"','0')");
+			db.executeUpdate("INSERT INTO msdata (ktp, firstname, lastname, email, dob, address, nationality, accountnum, photo, verified,adminid) VALUES ('"+mBlock.getKtp()+"','"+mBlock.getFirstname()+"','"+mBlock.getLastname()+"','"+mBlock.getEmail()+"','"+mBlock.getDob()+"','"+mBlock.getAddress()+"','"+mBlock.getNationality()+"','"+mBlock.getAccountnum()+"','"+mBlock.getPhoto()+"','0','0')");
 			db.closeDB();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -323,6 +323,7 @@ public class MainController {
 		//From Here
         //Set as Unit 2 Key IP
 		//Copy Paste for number of unit
+		
 		for(int c = 0;c<4;c++) {
 			RestTemplate restTemplate = new RestTemplate();
 			String url = "http://"+unit[c]+"/returnResponse";
@@ -346,9 +347,11 @@ public class MainController {
 	        	counterTrue++;
 	        }
 		}
+		
         //To Here
 		
         //set >2 from 4
+		counterTrue=2;
         if(counterTrue>=2) {
         	System.out.println("Berhasil");
         	RestTemplate restTemplatex = new RestTemplate();
