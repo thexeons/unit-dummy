@@ -152,6 +152,7 @@ public class MainController {
 		
 		
 		//Concensus
+		
 		for(int c = 0 ;c<4;c++) {
 			RestTemplate restTemplate = new RestTemplate();
 			String url = "http://"+unit[c]+"/returnResponse";
@@ -178,7 +179,7 @@ public class MainController {
         //To Here
 		
         //set >2 from 4
-        if(counterTrue>=2) {
+		if(counterTrue>=2) {
         	System.out.println("Berhasil");
         	RestTemplate restTemplatex = new RestTemplate();
        	 	String urlx = "http://"+master1+"/newUpdateBlock";
@@ -324,6 +325,7 @@ public class MainController {
         //Set as Unit 2 Key IP
 		//Copy Paste for number of unit
 		
+		
 		for(int c = 0;c<4;c++) {
 			RestTemplate restTemplate = new RestTemplate();
 			String url = "http://"+unit[c]+"/returnResponse";
@@ -348,11 +350,11 @@ public class MainController {
 	        }
 		}
 		
+		
         //To Here
 		
         //set >2 from 4
-		counterTrue=2;
-        if(counterTrue>=2) {
+		if(counterTrue>=2) {
         	System.out.println("Berhasil");
         	RestTemplate restTemplatex = new RestTemplate();
        	 	String urlx = "http://"+master1+"/newBlock";
