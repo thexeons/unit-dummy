@@ -1,6 +1,9 @@
 package com.bca.bankunit.controller;
 
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -18,6 +21,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,8 +39,9 @@ public class MainController {
 	ConnectDB db = new ConnectDB();
 	RestTemplate rt = new RestTemplate();
 	
-
-	public static final String[] master = {"192.168.43","192.168.43","192.168.43","192.168.43"};
+	public static final String ferdy = "http://insert.your.ip.here:8095/blocks";
+	
+	public static final String[] master = {"http://insert.your.ip.here:8095","http://insert.your.ip.here:8095","http://insert.your.ip.here:8095","http://192.168.43.171:8095","http://localhost:8095"};
 	public static final String[] unit = {"192.168.43","192.168.43","192.168.43","192.168.43"};
 
 	public static final String  master1 = "localhost:8095";
@@ -79,6 +84,41 @@ public class MainController {
 	private BlockService mBlockService;
 
 	
+	public static String getStatus(String url) throws IOException {
+        
+        String result = "";
+        int code = 200;
+        try {
+            URL siteURL = new URL(url);
+            HttpURLConnection connection = (HttpURLConnection) siteURL.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(3000);
+            connection.connect();
+ 
+            code = connection.getResponseCode();
+            if (code == 200) {
+                result = "Success";
+            } else {
+                result = "Fail";
+            }
+        } catch (Exception e) {
+        	result = "Error"+e.getMessage();
+ 
+        }
+        return result+"-"+url;
+    }
+	
+	@GetMapping("/ferdy")
+	public void ferdy() {
+		try {
+			System.out.println(getStatus(ferdy));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
 	public MainController(BlockService mBlockService) {
 		this.mBlockService = mBlockService;
 	}
@@ -105,7 +145,7 @@ public class MainController {
 		try {
 			db.openDB();
 			db.executeUpdate("DELETE FROM msdata where ktp='"+uBlock.getKtp()+"'");
-			db.executeUpdate("INSERT INTO msdata (ktp, firstname, lastname, email, dob, address, nationality, accountnum, photo,verified) VALUES ('"+uBlock.getKtp()+"','"+uBlock.getFirstname()+"','"+uBlock.getLastname()+"','"+uBlock.getEmail()+"','"+uBlock.getDob()+"','"+uBlock.getAddress()+"','"+uBlock.getNationality()+"','"+uBlock.getAccountnum()+"','"+uBlock.getPhoto()+"','1')");
+			db.executeUpdate("INSERT INTO msdata (ktp, firstname, lastname, email, dob, address, nationality, accountnum, photo,verified,adminid) VALUES ('"+uBlock.getKtp()+"','"+uBlock.getFirstname()+"','"+uBlock.getLastname()+"','"+uBlock.getEmail()+"','"+uBlock.getDob()+"','"+uBlock.getAddress()+"','"+uBlock.getNationality()+"','"+uBlock.getAccountnum()+"','"+uBlock.getPhoto()+"','1','1')");
 			db.closeDB();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -152,7 +192,7 @@ public class MainController {
 		
 		
 		//Concensus
-		
+		/*
 		for(int c = 0 ;c<4;c++) {
 			RestTemplate restTemplate = new RestTemplate();
 			String url = "http://"+unit[c]+"/returnResponse";
@@ -176,9 +216,14 @@ public class MainController {
 	        	counterTrue++;
 	        }
 		}
-        //To Here
 		
+		//editme
+		*/
+		
+		
+        //To Here
         //set >2 from 4
+        counterTrue=2;
 		if(counterTrue>=2) {
         	System.out.println("Berhasil");
         	RestTemplate restTemplatex = new RestTemplate();
@@ -301,6 +346,25 @@ public class MainController {
 	@PostMapping("/acceptBlock")
 	public Block acceptBlock(@RequestBody Block bBlock) {
 		
+		String ipx ="";
+		String rsx = "";
+		
+		for(int z = 0 ; z<master.length;z++) {
+			try {
+				String resultx = getStatus(master[z]);
+				String[] catchRes = resultx.split("-");
+				rsx = catchRes[0];
+				ipx = catchRes[1];
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			if(rsx.equals("Success")) {
+				break;
+			}
+		}
+		
+		
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 		int counterTrue = 0;
 		String answer = "";
@@ -325,7 +389,7 @@ public class MainController {
         //Set as Unit 2 Key IP
 		//Copy Paste for number of unit
 		
-		
+		/*
 		for(int c = 0;c<4;c++) {
 			RestTemplate restTemplate = new RestTemplate();
 			String url = "http://"+unit[c]+"/returnResponse";
@@ -350,14 +414,14 @@ public class MainController {
 	        }
 		}
 		
-		
+		*/
         //To Here
-		
-        //set >2 from 4
+		//set >2 from 4
+		counterTrue=2;
 		if(counterTrue>=2) {
         	System.out.println("Berhasil");
         	RestTemplate restTemplatex = new RestTemplate();
-       	 	String urlx = "http://"+master1+"/newBlock";
+       	 	String urlx = rsx+"/newBlock";
        	 	HttpHeaders headersx = new HttpHeaders();
        	 	headersx.setContentType(MediaType.APPLICATION_JSON);
             JSONObject postdatax = new JSONObject();
@@ -588,8 +652,8 @@ public class MainController {
    	 	if(answer.equals("False")){
    	 		try {
    	 			db.openDB();
-   	 			db.executeUpdate("insert into msdata(firstname,lastname,ktp,email,dob,address,nationality,accountnum,photo,verified) values "
-   						+ "('"+bBlock.getFirstname()+"','"+bBlock.getLastname()+"','"+bBlock.getKtp()+"','"+bBlock.getEmail()+"','"+bBlock.getDob()+"','"+bBlock.getAddress()+"','"+bBlock.getNationality()+"','"+bBlock.getAccountnum()+"','"+bBlock.getPhoto()+"','"+bBlock.getVerified()+"')");
+   	 			db.executeUpdate("insert into msdata(firstname,lastname,ktp,email,dob,address,nationality,accountnum,photo,verified,adminid) values "
+   						+ "('"+bBlock.getFirstname()+"','"+bBlock.getLastname()+"','"+bBlock.getKtp()+"','"+bBlock.getEmail()+"','"+bBlock.getDob()+"','"+bBlock.getAddress()+"','"+bBlock.getNationality()+"','"+bBlock.getAccountnum()+"','"+bBlock.getPhoto()+"','"+bBlock.getVerified()+"','1')");
 				db.closeDB();
    	 		} catch (Exception e) {
    	 			e.printStackTrace();
