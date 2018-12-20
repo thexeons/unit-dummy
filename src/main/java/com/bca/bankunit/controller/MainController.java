@@ -171,6 +171,24 @@ public class MainController {
 	@PostMapping("/confirmUpdate")
 	public Block confirmUpdate(@RequestBody Block cBlock) {
 		
+		String ipx ="";
+		String rsx = "";
+		
+		for(int z = 0 ; z<master.length;z++) {
+			try {
+				String resultx = getStatus(master[z]);
+				String[] catchRes = resultx.split("-");
+				rsx = catchRes[0];
+				ipx = catchRes[1];
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			if(rsx.equals("Success")) {
+				break;
+			}
+		}
+		
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 		int counterTrue = 0;
 		
@@ -192,7 +210,6 @@ public class MainController {
 		
 		
 		//Concensus
-		/*
 		for(int c = 0 ;c<4;c++) {
 			RestTemplate restTemplate = new RestTemplate();
 			String url = "http://"+unit[c]+"/returnResponse";
@@ -218,16 +235,14 @@ public class MainController {
 		}
 		
 		//editme
-		*/
 		
 		
         //To Here
         //set >2 from 4
-        counterTrue=2;
-		if(counterTrue>=2) {
+        if(counterTrue>=2) {
         	System.out.println("Berhasil");
         	RestTemplate restTemplatex = new RestTemplate();
-       	 	String urlx = "http://"+master1+"/newUpdateBlock";
+       	 	String urlx = ipx+"/newUpdateBlock";
        	 	HttpHeaders headersx = new HttpHeaders();
        	 	headersx.setContentType(MediaType.APPLICATION_JSON);
             JSONObject postdatax = new JSONObject();
@@ -355,6 +370,8 @@ public class MainController {
 				String[] catchRes = resultx.split("-");
 				rsx = catchRes[0];
 				ipx = catchRes[1];
+				System.out.println(rsx);
+				System.out.println(ipx);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -389,7 +406,7 @@ public class MainController {
         //Set as Unit 2 Key IP
 		//Copy Paste for number of unit
 		
-		/*
+		
 		for(int c = 0;c<4;c++) {
 			RestTemplate restTemplate = new RestTemplate();
 			String url = "http://"+unit[c]+"/returnResponse";
@@ -414,14 +431,13 @@ public class MainController {
 	        }
 		}
 		
-		*/
+		
         //To Here
 		//set >2 from 4
-		counterTrue=2;
 		if(counterTrue>=2) {
         	System.out.println("Berhasil");
         	RestTemplate restTemplatex = new RestTemplate();
-       	 	String urlx = rsx+"/newBlock";
+       	 	String urlx = ipx+"/newBlock";
        	 	HttpHeaders headersx = new HttpHeaders();
        	 	headersx.setContentType(MediaType.APPLICATION_JSON);
             JSONObject postdatax = new JSONObject();
@@ -467,7 +483,23 @@ public class MainController {
 	//php to unitservice to master blacklisst
 	@PostMapping("/blacklistBlock")
 	public Block blacklistBlock(@RequestBody Block bBlock) {
+		String ipx ="";
+		String rsx = "";
 		
+		for(int z = 0 ; z<master.length;z++) {
+			try {
+				String resultx = getStatus(master[z]);
+				String[] catchRes = resultx.split("-");
+				rsx = catchRes[0];
+				ipx = catchRes[1];
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			if(rsx.equals("Success")) {
+				break;
+			}
+		}
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 		int counterTrue = 0;
 		String answer = "";
@@ -520,7 +552,7 @@ public class MainController {
         if(counterTrue>=2) {
         	System.out.println("Berhasil");
         	RestTemplate restTemplatex = new RestTemplate();
-       	 	String urlx = "http://"+master1+"/newBlock";
+       	 	String urlx = ipx+"/newBlock";
        	 	HttpHeaders headersx = new HttpHeaders();
        	 	headersx.setContentType(MediaType.APPLICATION_JSON);
             JSONObject postdatax = new JSONObject();
@@ -566,7 +598,23 @@ public class MainController {
 	//php to unitservice to master blacklisst
 	@PostMapping("/rejectBlock")
 	public Block rejectBlock(@RequestBody Block bBlock) {
+		String ipx ="";
+		String rsx = "";
 		
+		for(int z = 0 ; z<master.length;z++) {
+			try {
+				String resultx = getStatus(master[z]);
+				String[] catchRes = resultx.split("-");
+				rsx = catchRes[0];
+				ipx = catchRes[1];
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			if(rsx.equals("Success")) {
+				break;
+			}
+		}
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 		int counterTrue = 0;
 		String answer = "";
@@ -619,7 +667,7 @@ public class MainController {
         if(counterTrue>=2) {
         	System.out.println("Berhasil");
         	RestTemplate restTemplatex = new RestTemplate();
-       	 	String urlx = "http://"+master1+"/newBlock";
+       	 	String urlx = ipx+"/newBlock";
        	 	HttpHeaders headersx = new HttpHeaders();
        	 	headersx.setContentType(MediaType.APPLICATION_JSON);
             JSONObject postdatax = new JSONObject();
