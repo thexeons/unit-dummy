@@ -6,8 +6,6 @@ import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-import org.springframework.stereotype.Component;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 @Entity

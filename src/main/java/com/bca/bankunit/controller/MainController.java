@@ -39,24 +39,21 @@ public class MainController {
 	ConnectDB db = new ConnectDB();
 	RestTemplate rt = new RestTemplate();
 	
-	public static final String ferdy = "http://insert.your.ip.here:8095/blocks";
-	
-	public static final String[] master = {"http://insert.your.ip.here:8095","http://insert.your.ip.here:8095","http://insert.your.ip.here:8095","http://192.168.43.171:8095","http://localhost:8095"};
-	public static final String[] unit = {"192.168.43","192.168.43","192.168.43","192.168.43"};
+	public static final String[] master = {"http://192.168.43.219:8095","http://192.168.43.171:8095","http://192.168.43.217:8095","http://insert.master.4.here:8095","http://insert.master.5.here:8095"};
+	public static final String[] unit = {"192.168.43","192.168.43.171:8090","192.168.43.217:8090","192.168.43"}; //4 karena dia ga konsensus diri sendiri.
 
-	public static final String  master1 = "localhost:8095";
-	public static final String  master2 = "192.168.43.171";
-	public static final String  master3 = "192.168.43.219";
-	public static final String  master4 = "192.168.43.219";
-	public static final String  master5 = "192.168.43.219";
+	public static final String  master1 = "192.168.43.219:8095";
+	public static final String  master2 = "192.168.43.171:8095";
+	public static final String  master3 = "192.168.43.217:8095";
+	public static final String  master4 = "192.168.43.100";
+	public static final String  master5 = "192.168.43.100";
 	
-	public static final String  bcabankIP = "localhost:8090";
-	public static final String  bcasyariahIP = "192.168.43.171";
-	public static final String  bcasekuritasIP = "192.168.43.219";
-	public static final String  bcafinancialIP = "192.168.43.219";
-	public static final String  bcainsuranceIP = "192.168.43.219";
+	public static final String  bcabankIP = "192.168.43.219:8090";
+	public static final String  bcasyariahIP = "192.168.43.100:8090";
+	public static final String  bcasekuritasIP = "192.168.43.100:8090";
+	public static final String  bcafinancialIP = "192.168.43.217:8090";
+	public static final String  bcainsuranceIP = "192.168.43.171:8090";
 	
-	//public String base64pubkey = "MFUwEwYHKoZIzj0CAQYIKoZIzj0DAQQDPgAEdRjqcQG0/6qisxiTnXW8XhZZwp3SsGXV1WXXEfxqAWAwBLgjOHX7/Sw0+5kKNACoZ0cwDVOf3NeJTkbW";
 	public String base64pubkey1 = "MFUwEwYHKoZIzj0CAQYIKoZIzj0DAQQDPgAEdRjqcQG0/6qisxiTnXW8XhZZwp3SsGXV1WXXEfxqAWAwBLgjOHX7/Sw0+5kKNACoZ0cwDVOf3NeJTkbW";
 	public PublicKey publickey1;
 	
@@ -71,7 +68,6 @@ public class MainController {
 	
 	public String base64pubkey5 = "MFUwEwYHKoZIzj0CAQYIKoZIzj0DAQQDPgAEV2wErQmFG1Wf+LtSlyvjBFXsqQ7hnkOMvoyMIYPQTAKanF6Ze/iSw/igOjQL/A2qAaceAi8gqQjor3qS";
 	public PublicKey publickey5;
-	
 	
 	public String base64privateKey1 = "MIGNAgEAMBMGByqGSM49AgEGCCqGSM49AwEEBHMwcQIBAQQeD5os95M4dUv/w/X3iNs1Q+MQnRn6ARetYPbHsdOWoAoGCCqGSM49AwEEoUADPgAEdRjqcQG0/6qisxiTnXW8XhZZwp3SsGXV1WXXEfxqAWAwBLgjOHX7/Sw0+5kKNACoZ0cwDVOf3NeJTkbW";
 	public PrivateKey privatekey1;
@@ -107,18 +103,7 @@ public class MainController {
         }
         return result+"-"+url;
     }
-	
-	@GetMapping("/ferdy")
-	public void ferdy() {
-		try {
-			System.out.println(getStatus(ferdy));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	
+		
 	public MainController(BlockService mBlockService) {
 		this.mBlockService = mBlockService;
 	}
