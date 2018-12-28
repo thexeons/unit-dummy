@@ -39,14 +39,14 @@ public class MainController {
 	ConnectDB db = new ConnectDB();
 	RestTemplate rt = new RestTemplate();
 	
-	public static final String[] master = {"http://192.168.43.219:8095","http://192.168.43.171:8095","http://192.168.43.217:8095","http://192.168.43.222:8095","http://insert.master.5.here:8095"};
-	public static final String[] unit = {"192.168.43.222.8090","192.168.43.171:8090","192.168.43.217:8090","192.168.43.219:8085"}; //4 karena dia ga konsensus diri sendiri.
+	public static final String[] master = {Block.master1,Block.master2,Block.master3,Block.master4,Block.master5};
+	public static final String[] unit = {Block.instance1,Block.instance2,Block.instance3,Block.instance4}; //4 karena dia ga konsensus diri sendiri.
 	
 	public static final String  bcabankIP = "192.168.43.219:8090";
 	public static final String  bcasyariahIP = "192.168.43.171:8090";
 	public static final String  bcasekuritasIP = "192.168.43.217:8090";
 	public static final String  bcafinancialIP = "192.168.43.222:8090";
-	public static final String  bcainsuranceIP = "192.168.43.219:8085";
+	public static final String  bcainsuranceIP = "192.168.43.157:8090";
 	
 	public String base64pubkey1 = "MFUwEwYHKoZIzj0CAQYIKoZIzj0DAQQDPgAEdRjqcQG0/6qisxiTnXW8XhZZwp3SsGXV1WXXEfxqAWAwBLgjOHX7/Sw0+5kKNACoZ0cwDVOf3NeJTkbW";
 	public PublicKey publickey1;
@@ -66,7 +66,6 @@ public class MainController {
 	public String base64privateKey1 = "MIGNAgEAMBMGByqGSM49AgEGCCqGSM49AwEEBHMwcQIBAQQeD5os95M4dUv/w/X3iNs1Q+MQnRn6ARetYPbHsdOWoAoGCCqGSM49AwEEoUADPgAEdRjqcQG0/6qisxiTnXW8XhZZwp3SsGXV1WXXEfxqAWAwBLgjOHX7/Sw0+5kKNACoZ0cwDVOf3NeJTkbW";
 	public PrivateKey privatekey1;
 
-	
 	ArrayList<Block> alBlock = new ArrayList<Block>();
 	public static int difficulty = 2;
 	
@@ -132,7 +131,6 @@ public class MainController {
 		
 		return uBlock;
 	}
-	
 	
 	//Master to unit update
 	@PostMapping("/getUpdate")

@@ -36,6 +36,17 @@ public class Block {
 	private String signature;
 	private String data;
 	//Constructor.
+	
+	public static String master1 ="0";
+	public static String master2 ="0";
+	public static String master3 ="0";
+	public static String master4 ="0";
+	public static String master5 ="0";
+	
+	public static String instance1 = "0";
+	public static String instance2 = "0";
+	public static String instance3 = "0";
+	public static String instance4 = "0";
 
 	public Block() {
 		// TODO Auto-generated constructor stub
